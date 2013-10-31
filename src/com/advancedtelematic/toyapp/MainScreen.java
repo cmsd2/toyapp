@@ -4,25 +4,34 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
-public class MainScreen implements Screen {
+public class MainScreen extends AbstractScreen<MyToyApp> {
     // constant useful for logging
-    public static final String LOG = MainScreen.class.getSimpleName();
 
     // a libgdx helper class that logs the current FPS each second
-    private FPSLogger fpsLogger;
+    private static final float BUTTON_WIDTH = 300f;
+    private static final float BUTTON_HEIGHT = 60f;
+    private static final float BUTTON_SPACING = 10f;
+
+    public MainScreen(MyToyApp app) {
+        super(app);
+    }
 
     @Override
     public void show()
     {
-        Gdx.app.log( MainScreen.LOG, "Showing main screen" );
-        fpsLogger = new FPSLogger();
+        super.show();
     }
 
     @Override
     public void hide()
     {
-        Gdx.app.log( MainScreen.LOG, "Hiding main screen" );
+        super.hide();
     }
 
     @Override
@@ -30,35 +39,72 @@ public class MainScreen implements Screen {
             int width,
             int height )
     {
-        Gdx.app.log( MainScreen.LOG, "Resizing game to: " + width + " x " + height );
+        super.resize(width, height);
+
+        Skin skin = getSkin();
+        Stage stage = getStage();
+
+        // create the table actor
+        Table table = new Table( getSkin() );
+        table.setSize(width, height);
+
+        // add the table to the stage and retrieve its layout
+        stage.addActor(table);
+        //TableLayout layout = table.getTableLayout();
+
+        // [edit] this section is not needed
+        // register the label "welcome"
+        // Label welcomeLabel = new Label( "Welcome to Tyrian for Android!", skin );
+        // layout.register( "welcomeMessage", welcomeLabel );
+
+        // register the button "start game"
+        TextButton startGameButton = new TextButton( "Start game", skin );
+
+        startGameButton.addListener(new ClickListener() {
+            @Override
+            public void clicked (InputEvent event, float x, float y)
+            {
+                app.setScreen( app.getGameScreen() );
+            }
+        });
+        table.add(startGameButton).pad(10);
+        table.row();
+
+        // register the button "options"
+        TextButton optionsButton = new TextButton( "About", skin );
+        optionsButton.addListener( new ClickListener() {
+            @Override
+            public void clicked (InputEvent event, float x, float y)
+            {
+                Gdx.app.log( MainScreen.this.LOG, "About button clicked" );
+                app.setScreen( app.getAboutScreen() );
+            }
+        } );
+        table.add(optionsButton).pad(10);
+        table.row();
     }
 
     @Override
     public void render(float delta)
     {
-        // the following code clears the screen with the given RGB color (green)
-        Gdx.gl.glClearColor( 0f, 1f, 0f, 1f );
-        Gdx.gl.glClear( GL20.GL_COLOR_BUFFER_BIT );
-
-        // output the current FPS
-        fpsLogger.log();
+        super.render(delta);
     }
 
     @Override
     public void pause()
     {
-        Gdx.app.log( MainScreen.LOG, "Pausing game" );
+        super.pause();
     }
 
     @Override
     public void resume()
     {
-        Gdx.app.log( MainScreen.LOG, "Resuming game" );
+        super.resume();
     }
 
     @Override
     public void dispose()
     {
-        Gdx.app.log( MainScreen.LOG, "Disposing game" );
+        super.dispose();
     }
 }
